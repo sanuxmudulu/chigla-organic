@@ -14,7 +14,8 @@ let cached: { token: string; expires: number } | null = null;
 async function accessToken(): Promise<string> {
   if (cached && cached.expires > Date.now() + 60_000) return cached.token;
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const key = process.env.GOOGLE_PRIVATE_KEY?.replace(/\n/g, "\n");
+  // Env UIs often store the PEM with literal "\n" sequences; turn them back into real newlines.
+  const key = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
   if (!email || !key) throw new Error("Missing GOOGLE_SERVICE_ACCOUNT_EMAIL / GOOGLE_PRIVATE_KEY");
   const now = Math.floor(Date.now() / 1000);
   const unsigned =

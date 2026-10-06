@@ -4,28 +4,24 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const items = [
-  { href: "/", label: "Overview" },
-  { href: "/content", label: "Content" },
+  { href: "/", label: "Today" },
+  { href: "/content", label: "Videos" },
   { href: "/schedule", label: "Schedule" },
-  { href: "/captions", label: "Captions & hashtags" },
-  { href: "/accounts", label: "Accounts" },
-  { href: "/test", label: "Test post" },
+  { href: "/test-post", label: "Send a test" },
 ];
 
 export function Nav() {
   const path = usePathname();
   return (
-    <nav className="flex flex-1 flex-col gap-1">
+    <nav className="flex flex-wrap gap-1">
       {items.map((i) => {
         const active = i.href === "/" ? path === "/" : path.startsWith(i.href);
         return (
           <Link
             key={i.href}
             href={i.href}
-            className={`rounded-md px-3 py-2 text-sm ${
-              active
-                ? "bg-indigo-600 text-white"
-                : "text-zinc-600 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+              active ? "bg-indigo-600 text-white" : "text-stone-600 hover:bg-stone-100"
             }`}
           >
             {i.label}

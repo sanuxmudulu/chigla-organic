@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { isAuthed } from "@/lib/auth";
 import { downloadFile } from "@/lib/drive";
 import { PLATFORMS, buildFields, uploadVideo, type Platform } from "@/lib/uploadpost";
 
@@ -16,10 +15,12 @@ type Body = {
   dryRun?: boolean;
 };
 
-// Dummy test endpoint: downloads one Drive video and posts it to the chosen platforms now.
+// Test endpoint: downloads one Drive video and posts it to the chosen platforms now.
+// Test posts are private by default (TikTok SELF_ONLY, YouTube private).
 export async function POST(req: Request) {
-  if (!(await isAuthed(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const b = (await req.json()) as Body;
+  b.tiktokPrivacy ??= "SELF_ONLY";
+  b.youtubePrivacy ??= "private";
   const user = process.env.UPLOAD_POST_USER;
   const platforms = (b.platforms ?? []).filter((p) => PLATFORMS.includes(p));
   if (!b.fileId || platforms.length === 0 || !b.title?.trim())

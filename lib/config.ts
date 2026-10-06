@@ -1,6 +1,6 @@
 import type { ScheduleConfig } from "./schedule.ts";
 
-// Placeholder settings until the settings screen + database exist.
+// Posting setup. Change these numbers here if the plan changes.
 export const DEFAULT_SCHEDULE: ScheduleConfig = {
   accounts: 5,
   clips: 5,
@@ -9,3 +9,8 @@ export const DEFAULT_SCHEDULE: ScheduleConfig = {
   staggerMinutes: 5,
   timeZone: "Australia/Sydney",
 };
+
+// Today's date (YYYY-MM-DD) in the posting timezone.
+export function todayIn(timeZone: string): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone }).format(new Date());
+}
