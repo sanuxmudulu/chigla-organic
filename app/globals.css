@@ -97,11 +97,6 @@ body {
   60% { transform: scale(1.04); opacity: 1; }
   100% { transform: scale(1); }
 }
-@keyframes ring {
-  0% { box-shadow: 0 0 0 0 rgb(236 72 153 / 0.55); }
-  70% { box-shadow: 0 0 0 10px rgb(236 72 153 / 0); }
-  100% { box-shadow: 0 0 0 0 rgb(236 72 153 / 0); }
-}
 @keyframes drift {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-3px); }
@@ -125,7 +120,6 @@ body {
 button:not(:disabled) { transition: transform 0.12s ease, background-color 0.2s ease, box-shadow 0.2s ease; }
 button:not(:disabled):active { transform: scale(0.97); }
 
-.ring-up { animation: ring 1.8s ease-out infinite; }
 .bounce-in { animation: pop 0.35s ease both; }
 .drift { animation: drift 3s ease-in-out infinite; }
 .grow { animation: fill 0.9s ease both; }

@@ -24,7 +24,11 @@ async function accessToken(): Promise<string> {
   if (cached && cached.expires > Date.now() + 60_000) return cached.token;
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const key = readPrivateKey();
-  if (!email || !key) throw new Error("Missing GOOGLE_SERVICE_ACCOUNT_EMAIL / GOOGLE_PRIVATE_KEY");
+  if (!email || !key) throw new Error("This website can't see GOOGLE_SERVICE_ACCOUNT_EMAIL or GOOGLE_PRIVATE_KEY. Check the names in Vercel and redeploy.");
+  if (!key.includes("-----BEGIN PRIVATE KEY-----") || !key.includes("-----END PRIVATE KEY-----"))
+    throw new Error(
+      "GOOGLE_PRIVATE_KEY in Vercel is not the full key. It must include the -----BEGIN PRIVATE KEY----- and -----END PRIVATE KEY----- lines (the private_key value from the service account JSON file).",
+    );
   const now = Math.floor(Date.now() / 1000);
   const unsigned =
     b64url(JSON.stringify({ alg: "RS256", typ: "JWT" })) +

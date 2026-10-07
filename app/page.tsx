@@ -89,7 +89,6 @@ export default async function TodayPage() {
         sessionTimes={settings.sessionTimes}
         staggerMinutes={settings.staggerMinutes}
         statuses={statuses}
-        nextPost={nextIndex === -1 ? null : nextIndex + 1}
       />
     </>
   );

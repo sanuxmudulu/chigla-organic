@@ -7,10 +7,20 @@ export function PageHeader({ title, sub }: { title: string; sub?: string }) {
   );
 }
 
-export function Card({ title, children, className = "" }: { title?: string; children: React.ReactNode; className?: string }) {
+export function Card({
+  title,
+  children,
+  className = "",
+  compact = false,
+}: {
+  title?: string;
+  children: React.ReactNode;
+  className?: string;
+  compact?: boolean;
+}) {
   return (
-    <section className={`lift rounded-2xl border border-stone-200 bg-white p-6 shadow-sm ${className}`}>
-      {title && <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-stone-500">{title}</h2>}
+    <section className={`lift rounded-2xl border border-stone-200 bg-white shadow-sm ${compact ? "p-4" : "p-6"} ${className}`}>
+      {title && <h2 className={`${compact ? "mb-3" : "mb-4"} text-sm font-semibold uppercase tracking-wide text-stone-500`}>{title}</h2>}
       {children}
     </section>
   );

@@ -14,46 +14,47 @@ const STYLE: Record<PostStatus, string> = {
 
 const TIME = new Intl.DateTimeFormat("en-US", { timeZone: S.timeZone, hour: "numeric", minute: "2-digit" });
 
-// The day's posts, grouped into one card per session. Post numbers run 1 to 25 across the day.
+// The day's posts, one compact card per session. Phones show one per row; wider screens fit
+// three per row, so five sessions read as 3 + 2. Post numbers run 1 to 25 across the day.
 export function DaySessions({
   today,
   sessionTimes,
   staggerMinutes,
   statuses,
-  nextPost,
 }: {
   today: string;
   sessionTimes: string[];
   staggerMinutes: number;
   statuses: Partial<Record<number, PostStatus>>;
-  nextPost: number | null; // the post number that is up next, if any
 }) {
   const plan = buildPlan({ ...S, sessionTimes, staggerMinutes }, today, 1); // already in time order
   return (
-    <>
+    <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
       {sessionTimes.map((sessionTime, session) => {
         const rows: PlanRow[] = plan
           .map((p, i) => ({ p, n: i + 1 }))
           .filter(({ p }) => p.session === session)
           .map(({ p, n }) => ({ n, time: TIME.format(new Date(p.publishAt)), status: statuses[n] ?? "pending" }));
         return (
-          <Card key={sessionTime + session} title={`Session ${session + 1} · ${TIME.format(new Date(zonedToUtcIso(today, sessionTime, S.timeZone)))}`}>
-            <ul className="space-y-2">
+          <Card
+            key={sessionTime + session}
+            compact
+            title={`Session ${session + 1} · ${TIME.format(new Date(zonedToUtcIso(today, sessionTime, S.timeZone)))}`}
+          >
+            <ul className="space-y-1.5">
               {rows.map((r) => (
                 <li
                   key={r.n}
-                  className={`flex items-center justify-between gap-3 rounded-lg px-4 py-3 text-base transition hover:translate-x-1 ${STYLE[r.status]} ${
-                    r.n === nextPost ? "ring-up ring-2 ring-pink-400" : ""
-                  }`}
+                  className={`flex items-center justify-between gap-2 rounded-md px-3 py-1.5 text-sm font-medium ${STYLE[r.status]}`}
                 >
-                  <span className="font-semibold">Post {r.n}</span>
-                  <span>{r.time}</span>
+                  <span>Post {r.n}</span>
+                  <span className="font-normal">{r.time}</span>
                 </li>
               ))}
             </ul>
           </Card>
         );
       })}
-    </>
+    </div>
   );
 }
