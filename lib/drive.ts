@@ -11,11 +11,19 @@ const b64url = (b: Buffer | string) => Buffer.from(b).toString("base64url");
 
 let cached: { token: string; expires: number } | null = null;
 
+// Pasted keys often arrive wrapped in quote marks, with literal "\n" instead of line breaks, or
+// with Windows line endings. Any of those makes the signing step fail with a DECODER error.
+function readPrivateKey(): string | undefined {
+  let k = process.env.GOOGLE_PRIVATE_KEY?.trim();
+  if (!k) return undefined;
+  if ((k.startsWith('"') && k.endsWith('"')) || (k.startsWith("'") && k.endsWith("'"))) k = k.slice(1, -1);
+  return k.replace(/\\n/g, "\n").replace(/\r\n/g, "\n").trim();
+}
+
 async function accessToken(): Promise<string> {
   if (cached && cached.expires > Date.now() + 60_000) return cached.token;
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  // Env UIs often store the PEM with literal "\n" sequences; turn them back into real newlines.
-  const key = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  const key = readPrivateKey();
   if (!email || !key) throw new Error("Missing GOOGLE_SERVICE_ACCOUNT_EMAIL / GOOGLE_PRIVATE_KEY");
   const now = Math.floor(Date.now() / 1000);
   const unsigned =

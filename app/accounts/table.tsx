@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { Card } from "../ui";
+import { PLATFORM_STYLE, PlatformLogo, type PlatformKey } from "../platform-logos";
 
-type Platform = "tiktok" | "instagram" | "youtube" | "facebook";
+type Platform = PlatformKey;
 const PLATFORM_LABEL: Record<Platform, string> = {
   tiktok: "TikTok",
   instagram: "Instagram",
@@ -56,16 +57,16 @@ export function AccountsView({ rows }: { rows: ProfileRow[] }) {
     <>
       {error && <p className="rounded-xl bg-red-50 p-4 text-base text-red-800">{error}</p>}
 
-      <Card className="overflow-x-auto">
+      <Card className="overflow-x-auto !p-0">
         {rows.length === 0 ? (
-          <p className="text-base text-stone-600">No profiles yet. Add one above, then connect its accounts.</p>
+          <p className="p-6 text-base text-stone-600">No profiles yet. Add one above, then connect its accounts.</p>
         ) : (
-          <table className="w-full min-w-[720px] text-left text-sm">
+          <table className="w-full min-w-[760px] text-left text-sm">
             <thead>
-              <tr className="text-stone-500">
-                <th className="py-2 pr-4 font-semibold">Profile</th>
+              <tr className="border-b border-stone-200 text-stone-500">
+                <th className="px-6 py-4 font-semibold">Profile</th>
                 {ORDER.map((p) => (
-                  <th key={p} className="py-2 pr-4 font-semibold">
+                  <th key={p} className="px-6 py-4 font-semibold">
                     {PLATFORM_LABEL[p]}
                   </th>
                 ))}
@@ -73,29 +74,27 @@ export function AccountsView({ rows }: { rows: ProfileRow[] }) {
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.profile} className="border-t border-stone-200 align-top">
-                  <td className="py-4 pr-4 font-semibold text-stone-900">{row.profile}</td>
+                <tr key={row.profile} className="border-b border-stone-200 last:border-0">
+                  <td className="px-6 py-5 align-top font-semibold text-stone-900">{row.profile}</td>
                   {ORDER.map((platform) => {
                     const cell = row.cells[platform];
                     const key = `${row.profile}:${platform}`;
+                    const style = PLATFORM_STYLE[platform];
                     return (
-                      <td key={platform} className="py-4 pr-4">
-                        <div className="space-y-2">
+                      <td key={platform} className="px-6 py-5 align-top">
+                        <div className="flex flex-col items-start gap-2.5">
                           <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${chip[cell.state]}`}>
                             {chipText[cell.state]}
                           </span>
-                          {cell.state !== "empty" && <div className="text-stone-700">{cell.label}</div>}
+                          {cell.state !== "empty" && <span className="text-stone-700">{cell.label}</span>}
                           {cell.state !== "connected" && (
                             <button
                               disabled={busy !== null}
                               onClick={() => connect(row.profile, platform)}
-                              className="rounded-full bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+                              className={`inline-flex items-center gap-2 rounded-full border-2 bg-white px-3.5 py-1.5 text-sm font-semibold text-stone-900 transition hover:shadow-md disabled:opacity-50 dark:bg-black dark:text-white ${style.border}`}
                             >
-                              {busy === key
-                                ? "Opening..."
-                                : cell.state === "empty"
-                                  ? `Connect ${PLATFORM_LABEL[platform]} account`
-                                  : "Reconnect"}
+                              <PlatformLogo platform={platform} />
+                              {busy === key ? "Opening..." : cell.state === "empty" ? "Connect" : "Reconnect"}
                             </button>
                           )}
                         </div>
