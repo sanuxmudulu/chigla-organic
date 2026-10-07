@@ -1,19 +1,8 @@
 // Captions, hashtags and per-profile details. All stored in Supabase (see the supabase/ folder).
 import { insert, remove, select, update, upsert } from "./db.ts";
-import type { Platform } from "./uploadpost.ts";
 
 export type Caption = { id: number; text: string; active: boolean };
-
-export type Hashtag = {
-  id: number;
-  clip: number | null; // 1 to 5, or null for any clip
-  tag: string;
-  tiktok: boolean;
-  instagram: boolean;
-  youtube: boolean;
-  facebook: boolean;
-};
-
+export type Hashtag = { id: number; tag: string; active: boolean };
 export type ProfileDetails = { username: string; facebook_page_id: string | null };
 
 // ---- Captions ----
@@ -26,26 +15,11 @@ export const setCaptionActive = (id: number, active: boolean) => update("caption
 export const deleteCaption = (id: number) => remove("captions", `id=eq.${id}`);
 
 // ---- Hashtags ----
-export const listHashtags = () =>
-  select<Hashtag>("hashtags", "select=id,clip,tag,tiktok,instagram,youtube,facebook&order=clip.asc.nullsfirst,id.asc");
+export const listHashtags = () => select<Hashtag>("hashtags", "select=id,tag,active&order=id.asc");
 
-export const addHashtag = (clip: number | null, tag: string, platforms: Platform[]) =>
-  insert("hashtags", {
-    clip,
-    tag,
-    tiktok: platforms.includes("tiktok"),
-    instagram: platforms.includes("instagram"),
-    youtube: platforms.includes("youtube"),
-    facebook: platforms.includes("facebook"),
-  });
+export const addHashtag = (tag: string) => insert("hashtags", { tag });
 
-export const setHashtagPlatforms = (id: number, platforms: Platform[]) =>
-  update("hashtags", `id=eq.${id}`, {
-    tiktok: platforms.includes("tiktok"),
-    instagram: platforms.includes("instagram"),
-    youtube: platforms.includes("youtube"),
-    facebook: platforms.includes("facebook"),
-  });
+export const setHashtagActive = (id: number, active: boolean) => update("hashtags", `id=eq.${id}`, { active });
 
 export const deleteHashtag = (id: number) => remove("hashtags", `id=eq.${id}`);
 

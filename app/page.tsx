@@ -33,7 +33,7 @@ export default async function TodayPage() {
 
   return (
     <>
-      <PageHeader title="Today" sub={`${DAY.format(new Date())} · New York time`} />
+      <PageHeader title="Home" sub={`${DAY.format(new Date())} · New York time`} />
 
       {notices.length > 0 && (
         <div className="space-y-1 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">
@@ -47,6 +47,12 @@ export default async function TodayPage() {
         <Card title="Videos ready">
           <div className="text-4xl font-semibold text-stone-900">
             {videos} <span className="text-2xl text-stone-400">/ {expected}</span>
+          </div>
+          <div className="progress-track mt-4 h-3 w-full overflow-hidden rounded-full">
+            <div
+              className="grow h-full rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500"
+              style={{ width: `${Math.min(100, Math.round((videos / expected) * 100))}%` }}
+            />
           </div>
           <div className="mt-4">
             {driveError ? (
@@ -83,6 +89,7 @@ export default async function TodayPage() {
         sessionTimes={settings.sessionTimes}
         staggerMinutes={settings.staggerMinutes}
         statuses={statuses}
+        nextPost={nextIndex === -1 ? null : nextIndex + 1}
       />
     </>
   );

@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { Geist } from "next/font/google";
 import { Nav } from "./nav";
 import { ThemeToggle } from "./theme-toggle";
+import { Sparkle } from "./icons";
 import "./globals.css";
 
 const geist = Geist({
@@ -11,7 +12,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Chigla Organic",
+  title: "CHIGLA",
   description: "Post your videos to TikTok, Instagram, YouTube and Facebook",
 };
 
@@ -28,12 +29,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-full">
         <header className="sticky top-0 z-10 border-b border-stone-200 bg-white/90 backdrop-blur">
           <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
-            <span className="text-lg font-semibold tracking-tight text-stone-900">Chigla Organic</span>
+            <span className="flex items-center gap-2 text-lg font-extrabold tracking-[0.2em] text-stone-900 dark:text-stone-100">
+              <Sparkle />
+              CHIGLA
+            </span>
             <Nav />
             <ThemeToggle />
           </div>
         </header>
-        <main className="mx-auto max-w-5xl space-y-6 px-4 py-8">{children}</main>
+        <main className="page-enter mx-auto max-w-5xl space-y-6 px-4 py-8">{children}</main>
       </body>
     </html>
   );

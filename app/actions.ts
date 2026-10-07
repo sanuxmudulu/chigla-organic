@@ -9,9 +9,9 @@ import {
   deleteHashtag,
   setCaptionActive,
   setFacebookPageId,
-  setHashtagPlatforms,
+  setHashtagActive,
 } from "@/lib/content";
-import { PLATFORMS, type Platform } from "@/lib/uploadpost";
+import { PLATFORMS } from "@/lib/uploadpost";
 
 export type Result = { ok: true } | { ok: false; error: string };
 
@@ -25,8 +25,6 @@ async function run(work: () => Promise<unknown>): Promise<Result> {
 }
 
 const isId = (n: unknown): n is number => typeof n === "number" && Number.isInteger(n) && n > 0;
-const isPlatforms = (p: unknown): p is Platform[] =>
-  Array.isArray(p) && p.every((x) => PLATFORMS.includes(x as Platform));
 
 // ---- Settings ----
 export async function saveSettingsAction(s: Settings): Promise<Result> {
@@ -66,21 +64,17 @@ export async function deleteCaptionAction(id: number): Promise<Result> {
 }
 
 // ---- Hashtags ----
-export async function addHashtagAction(clip: number | null, tag: string, platforms: Platform[]): Promise<Result> {
-  if (clip !== null && !(Number.isInteger(clip) && clip >= 1 && clip <= 5))
-    return { ok: false, error: "Clip must be 1 to 5, or all clips." };
+export async function addHashtagAction(tag: string): Promise<Result> {
   let t = tag.trim().replace(/\s+/g, "");
   if (!t) return { ok: false, error: "Write a hashtag first." };
   if (!t.startsWith("#")) t = `#${t}`;
   if (t.length < 2 || t.length > 100) return { ok: false, error: "Hashtags must be 1 to 99 characters." };
-  if (!isPlatforms(platforms)) return { ok: false, error: "Unknown platform." };
-  return run(() => addHashtag(clip, t, platforms));
+  return run(() => addHashtag(t));
 }
 
-export async function setHashtagPlatformsAction(id: number, platforms: Platform[]): Promise<Result> {
+export async function setHashtagActiveAction(id: number, active: boolean): Promise<Result> {
   if (!isId(id)) return { ok: false, error: "Unknown hashtag." };
-  if (!isPlatforms(platforms)) return { ok: false, error: "Unknown platform." };
-  return run(() => setHashtagPlatforms(id, platforms));
+  return run(() => setHashtagActive(id, active));
 }
 
 export async function deleteHashtagAction(id: number): Promise<Result> {

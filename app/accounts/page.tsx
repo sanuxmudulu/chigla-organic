@@ -5,7 +5,7 @@ import { Card, Notice, PageHeader } from "../ui";
 import { AccountsView, type ProfileView } from "./table";
 import { AddProfile } from "./add-profile";
 
-export const metadata = { title: "Accounts · Chigla Organic" };
+export const metadata = { title: "Accounts · CHIGLA" };
 
 // Turn Upload-Post's profile data into one view per profile, one entry per platform.
 function toViews(profiles: Profile[], pageIds: Record<string, string | null>): ProfileView[] {

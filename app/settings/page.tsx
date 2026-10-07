@@ -3,7 +3,7 @@ import { getSettings } from "@/lib/settings";
 import { Notice, PageHeader } from "../ui";
 import { SettingsForm } from "./form";
 
-export const metadata = { title: "Settings · Chigla Organic" };
+export const metadata = { title: "Settings · CHIGLA" };
 
 export default async function SettingsPage() {
   const { settings, error } = await getSettings();

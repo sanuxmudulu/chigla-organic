@@ -20,11 +20,13 @@ export function DaySessions({
   sessionTimes,
   staggerMinutes,
   statuses,
+  nextPost,
 }: {
   today: string;
   sessionTimes: string[];
   staggerMinutes: number;
   statuses: Partial<Record<number, PostStatus>>;
+  nextPost: number | null; // the post number that is up next, if any
 }) {
   const plan = buildPlan({ ...S, sessionTimes, staggerMinutes }, today, 1); // already in time order
   return (
@@ -38,7 +40,12 @@ export function DaySessions({
           <Card key={sessionTime + session} title={`Session ${session + 1} · ${TIME.format(new Date(zonedToUtcIso(today, sessionTime, S.timeZone)))}`}>
             <ul className="space-y-2">
               {rows.map((r) => (
-                <li key={r.n} className={`flex items-center justify-between gap-3 rounded-lg px-4 py-3 text-base ${STYLE[r.status]}`}>
+                <li
+                  key={r.n}
+                  className={`flex items-center justify-between gap-3 rounded-lg px-4 py-3 text-base transition hover:translate-x-1 ${STYLE[r.status]} ${
+                    r.n === nextPost ? "ring-up ring-2 ring-pink-400" : ""
+                  }`}
+                >
                   <span className="font-semibold">Post {r.n}</span>
                   <span>{r.time}</span>
                 </li>

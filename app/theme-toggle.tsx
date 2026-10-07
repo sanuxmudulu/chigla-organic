@@ -29,7 +29,7 @@ export function ThemeToggle() {
         </svg>
       </span>
       <span className="flex h-7 w-1/2 items-center justify-center rounded-full bg-transparent transition-colors dark:bg-stone-900 dark:shadow-sm">
-        <svg viewBox="0 0 24 24" width="16" height="16" strokeWidth="2" strokeLinejoin="round" className="text-stone-400 dark:text-amber-300" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16" strokeWidth="2" strokeLinejoin="round" className="text-stone-400 dark:text-white dark:drop-shadow-[0_0_4px_rgba(255,255,255,0.9)]" aria-hidden="true">
           <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" fill="currentColor" stroke="currentColor" />
         </svg>
       </span>
