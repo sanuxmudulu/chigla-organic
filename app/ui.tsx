@@ -16,6 +16,10 @@ export function Card({ title, children, className = "" }: { title?: string; chil
   );
 }
 
+export function Notice({ children }: { children: React.ReactNode }) {
+  return <div className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">{children}</div>;
+}
+
 export function Pill({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
     <span
