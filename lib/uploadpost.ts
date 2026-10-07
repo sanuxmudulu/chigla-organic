@@ -72,3 +72,57 @@ export async function uploadStatus(requestId: string) {
   const res = await fetch(url, { headers: authHeaders() });
   return { httpStatus: res.status, ok: res.ok, body: await readBody(res) };
 }
+
+// ---- Profiles (one profile = one set of accounts, one per platform) ----
+
+export type SocialAccount = {
+  username?: string;
+  handle?: string;
+  display_name?: string;
+  social_images?: string;
+  reauth_required?: boolean;
+};
+
+export type Profile = {
+  username: string;
+  created_at?: string;
+  social_accounts: Partial<Record<Platform, SocialAccount | null | "">>;
+};
+
+type ApiJson = { success?: boolean; message?: string; [k: string]: unknown };
+
+async function apiJson(path: string, init: RequestInit = {}): Promise<{ status: number; body: ApiJson }> {
+  const res = await fetch(`${BASE}${path}`, {
+    ...init,
+    headers: { ...authHeaders(), ...(init.body ? { "content-type": "application/json" } : {}) },
+    cache: "no-store",
+  });
+  const body = (await readBody(res)) as ApiJson;
+  return { status: res.status, body: typeof body === "object" && body ? body : { success: false, message: String(body) } };
+}
+
+export async function listProfiles(): Promise<Profile[]> {
+  const { status, body } = await apiJson("/uploadposts/users");
+  if (!Array.isArray(body.profiles)) throw new Error(body.message ?? `Upload-Post profile list failed (${status})`);
+  return body.profiles as Profile[];
+}
+
+export async function createProfile(username: string): Promise<{ ok: boolean; message?: string }> {
+  const { status, body } = await apiJson("/uploadposts/users", { method: "POST", body: JSON.stringify({ username }) });
+  return { ok: status < 300 && body.success !== false, message: body.message };
+}
+
+// Single-use connect link for one platform on one profile. Opens Upload-Post's own login page.
+export async function connectLink(opts: { username: string; platform: Platform; redirectUrl: string }) {
+  const { status, body } = await apiJson("/uploadposts/users/generate-jwt", {
+    method: "POST",
+    body: JSON.stringify({
+      username: opts.username,
+      platforms: [opts.platform],
+      redirect_url: opts.redirectUrl,
+    }),
+  });
+  const url = body.access_url as string | undefined;
+  if (!url) throw new Error(body.message ?? `Could not create a connect link (${status})`);
+  return url;
+}
