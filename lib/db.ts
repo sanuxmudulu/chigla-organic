@@ -3,15 +3,19 @@
 
 type Row = Record<string, unknown>;
 
+// The project URL, with any "/rest/v1" path that was pasted in by mistake removed.
+function projectUrl(): string {
+  return (process.env.SUPABASE_URL ?? "").trim().replace(/\/rest\/v1\/?$/, "").replace(/\/$/, "");
+}
+
 // Says what is wrong with the database setup, or null if it looks fine. Never shows the values.
 export function dbProblem(): string | null {
-  const base = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_KEY;
-  const missing = [!base && "SUPABASE_URL", !key && "SUPABASE_SERVICE_KEY"].filter(Boolean);
+  const missing = [!process.env.SUPABASE_URL && "SUPABASE_URL", !key && "SUPABASE_SERVICE_KEY"].filter(Boolean);
   if (missing.length)
     return `The database isn't connected. This website can't see ${missing.join(" and ")}. Check the names in Vercel, make sure they're on Production, then redeploy.`;
-  if (!/^https:\/\/[a-z0-9]+\.supabase\.co\/?$/.test(base!.trim()))
-    return "SUPABASE_URL should look like https://xxxx.supabase.co (the Project URL from Supabase).";
+  if (!/^https:\/\/[a-z0-9]+\.supabase\.co$/.test(projectUrl()))
+    return "SUPABASE_URL should be the Project URL, like https://xxxx.supabase.co (not the API URL with /rest/v1 on the end).";
   if (key!.trim().startsWith("sb_publishable_"))
     return "SUPABASE_SERVICE_KEY holds the publishable key. Use the secret key instead (it starts with sb_secret_).";
   return null;
@@ -24,7 +28,7 @@ export function dbReady(): boolean {
 async function call<T>(method: string, path: string, body?: unknown, prefer?: string): Promise<T> {
   const problem = dbProblem();
   if (problem) throw new Error(problem);
-  const base = process.env.SUPABASE_URL!.trim().replace(/\/$/, "");
+  const base = projectUrl();
   const key = process.env.SUPABASE_SERVICE_KEY!.trim();
   const headers: Record<string, string> = {
     apikey: key,

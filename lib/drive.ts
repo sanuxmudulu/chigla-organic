@@ -20,11 +20,26 @@ function readPrivateKey(): string | undefined {
   return k.replace(/\\n/g, "\n").replace(/\r\n/g, "\n").trim();
 }
 
+// Preferred: GOOGLE_SERVICE_ACCOUNT_JSON holds the whole service account JSON file, pasted as-is.
+// Fallback: GOOGLE_SERVICE_ACCOUNT_EMAIL and GOOGLE_PRIVATE_KEY, one value each.
+function readCredentials(): { email?: string; key?: string } {
+  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON?.trim();
+  if (raw) {
+    let j: { client_email?: string; private_key?: string };
+    try {
+      j = JSON.parse(raw);
+    } catch {
+      throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON in Vercel isn't valid JSON. Paste the whole contents of the service account .json file, from the opening { to the closing }.");
+    }
+    return { email: j.client_email, key: j.private_key };
+  }
+  return { email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL, key: readPrivateKey() };
+}
+
 async function accessToken(): Promise<string> {
   if (cached && cached.expires > Date.now() + 60_000) return cached.token;
-  const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const key = readPrivateKey();
-  if (!email || !key) throw new Error("This website can't see GOOGLE_SERVICE_ACCOUNT_EMAIL or GOOGLE_PRIVATE_KEY. Check the names in Vercel and redeploy.");
+  const { email, key } = readCredentials();
+  if (!email || !key) throw new Error("This website can't see the Google service account. Add GOOGLE_SERVICE_ACCOUNT_JSON in Vercel (the whole .json file) and redeploy.");
   if (!key.includes("-----BEGIN PRIVATE KEY-----") || !key.includes("-----END PRIVATE KEY-----"))
     throw new Error(
       "GOOGLE_PRIVATE_KEY in Vercel is not the full key. It must include the -----BEGIN PRIVATE KEY----- and -----END PRIVATE KEY----- lines (the private_key value from the service account JSON file).",
