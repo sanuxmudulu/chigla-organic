@@ -21,7 +21,30 @@ function toRows(profiles: Profile[]): ProfileRow[] {
   }));
 }
 
-export default async function AccountsPage() {
+const PLATFORM_NAME: Record<string, string> = {
+  tiktok: "TikTok",
+  instagram: "Instagram",
+  youtube: "YouTube",
+  facebook: "Facebook",
+};
+
+// Shown after she comes back from the platform's login page.
+function resultBanner(sp: { connect_status?: string; platform?: string; error_code?: string; profile?: string }) {
+  if (!sp.connect_status) return null;
+  const who = `${PLATFORM_NAME[sp.platform ?? ""] ?? sp.platform ?? "Account"}${sp.profile ? ` on ${sp.profile}` : ""}`;
+  if (sp.connect_status === "success")
+    return { ok: true, text: `${who} is connected.` };
+  if (sp.connect_status === "cancelled")
+    return { ok: false, text: `Connecting ${who} was cancelled.` };
+  return { ok: false, text: `Connecting ${who} failed${sp.error_code ? ` (${sp.error_code})` : ""}. Try again.` };
+}
+
+export default async function AccountsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ connect_status?: string; platform?: string; error_code?: string; profile?: string }>;
+}) {
+  const banner = resultBanner(await searchParams);
   let rows: ProfileRow[] = [];
   let error: string | undefined;
   try {
@@ -34,8 +57,18 @@ export default async function AccountsPage() {
     <>
       <PageHeader
         title="Accounts"
-        sub="Each row is one profile and each column is one platform. To add an account, press Connect in an empty box. To remove an account, use Upload-Post."
+        sub="Each row is one profile and each column is one platform. Press Connect in an empty box to log in to that account."
       />
+
+      {banner && (
+        <p
+          className={`rounded-xl p-4 text-base ${
+            banner.ok ? "bg-emerald-50 text-emerald-900" : "bg-red-50 text-red-800"
+          }`}
+        >
+          {banner.text}
+        </p>
+      )}
 
       <Card title="Add a profile">
         <AddProfile />

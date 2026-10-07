@@ -91,7 +91,11 @@ export function AccountsView({ rows }: { rows: ProfileRow[] }) {
                               onClick={() => connect(row.profile, platform)}
                               className="rounded-full bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
                             >
-                              {busy === key ? "Opening..." : cell.state === "empty" ? "Connect" : "Reconnect"}
+                              {busy === key
+                                ? "Opening..."
+                                : cell.state === "empty"
+                                  ? `Connect ${PLATFORM_LABEL[platform]} account`
+                                  : "Reconnect"}
                             </button>
                           )}
                         </div>

@@ -112,17 +112,14 @@ export async function createProfile(username: string): Promise<{ ok: boolean; me
   return { ok: status < 300 && body.success !== false, message: body.message };
 }
 
-// Single-use connect link for one platform on one profile. Opens Upload-Post's own login page.
-export async function connectLink(opts: { username: string; platform: Platform; redirectUrl: string }) {
-  const { status, body } = await apiJson("/uploadposts/users/generate-jwt", {
+// Direct OAuth start for one platform on one profile. Returns the platform's own login URL
+// (Google for YouTube, Meta for Instagram/Facebook, ...). It expires after 15 minutes.
+export async function startOAuth(opts: { username: string; platform: Platform; redirectUrl: string }) {
+  const { status, body } = await apiJson(`/uploadposts/oauth/${opts.platform}/start`, {
     method: "POST",
-    body: JSON.stringify({
-      username: opts.username,
-      platforms: [opts.platform],
-      redirect_url: opts.redirectUrl,
-    }),
+    body: JSON.stringify({ profile: opts.username, redirect_url: opts.redirectUrl }),
   });
-  const url = body.access_url as string | undefined;
-  if (!url) throw new Error(body.message ?? `Could not create a connect link (${status})`);
+  const url = body.authorize_url as string | undefined;
+  if (!url) throw new Error(body.message ?? `Upload-Post did not return a login link (HTTP ${status})`);
   return url;
 }

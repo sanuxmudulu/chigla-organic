@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
-/* One light theme, on purpose: simpler to read and no surprises. */
+/* Dark mode is turned on by a "dark" class on <html> (set by the sun/moon button), not by the
+   system setting. Light is the default. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --font-sans: var(--font-geist-sans);
 }
@@ -9,4 +12,77 @@ body {
   background: #faf7f2;
   color: #1c1917;
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* ---- Dark theme ----
+   The pages use the normal light colour classes (bg-white, text-stone-900, ...). In dark mode
+   these are remapped here, so every page follows the switch without being edited one by one. */
+.dark body {
+  background: #0c0a09;
+  color: #e7e5e4;
+}
+.dark .bg-white {
+  background-color: #1c1917;
+}
+.dark .bg-white\/90 {
+  background-color: rgb(28 25 23 / 0.9);
+}
+.dark .bg-stone-50 {
+  background-color: #1c1917;
+}
+.dark .bg-stone-100,
+.dark .hover\:bg-stone-100:hover {
+  background-color: #292524;
+}
+.dark .border-stone-200,
+.dark .border-stone-300 {
+  border-color: #3c3836;
+}
+.dark .text-stone-900 {
+  color: #f5f5f4;
+}
+.dark .text-stone-800 {
+  color: #e7e5e4;
+}
+.dark .text-stone-700 {
+  color: #d6d3d1;
+}
+.dark .text-stone-600,
+.dark .text-stone-500 {
+  color: #a8a29e;
+}
+.dark .text-stone-400 {
+  color: #78716c;
+}
+.dark input,
+.dark select {
+  background-color: #1c1917;
+  color: #f5f5f4;
+}
+.dark .bg-emerald-50 {
+  background-color: rgb(6 78 59 / 0.35);
+}
+.dark .bg-emerald-100 {
+  background-color: rgb(6 78 59 / 0.55);
+}
+.dark .text-emerald-800,
+.dark .text-emerald-900 {
+  color: #a7f3d0;
+}
+.dark .bg-amber-50 {
+  background-color: rgb(120 53 15 / 0.3);
+}
+.dark .bg-amber-100 {
+  background-color: rgb(120 53 15 / 0.5);
+}
+.dark .text-amber-800,
+.dark .text-amber-900 {
+  color: #fde68a;
+}
+.dark .bg-red-50 {
+  background-color: rgb(127 29 29 / 0.35);
+}
+.dark .text-red-600,
+.dark .text-red-800 {
+  color: #fca5a5;
 }
